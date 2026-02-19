@@ -1,0 +1,22 @@
+{
+    "name": "Life Dashboard",
+    "short_name": "Dashboard",
+    "description": "Personal Life Metrics Dashboard",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#050510",
+    "theme_color": "#00f3ff",
+    "orientation": "landscape",
+    "icons": [
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/2919/2919601.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/2919/2919601.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

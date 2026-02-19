@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Life Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="ai-tooltip.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>My Life Metrics</h1>
+            <div class="clock" id="clock">00:00:00</div>
+        </header>
+
+        <!-- Use CSS Grid Areas or simple flow. Simple flow for now. -->
+
+        <!-- 1. Run/Workout -->
+        <article class="tile workout" id="tile-workout">
+            <h2>Workout Plan</h2>
+            <div class="tile-content" id="workout-content">
+                <!-- Javascript will inject here -->
+                <p>Loading...</p>
+            </div>
+        </article>
+
+        <!-- 2. Calendar -->
+        <article class="tile calendar" id="tile-calendar">
+            <h2>Today's Schedule</h2>
+            <div class="tile-content" id="calendar-content">
+                <p>Loading...</p>
+            </div>
+        </article>
+
+        <!-- 3. Chores -->
+        <article class="tile chores" id="tile-chores">
+            <h2>Chores</h2>
+            <div class="tile-content" id="chores-content">
+                <p>Loading...</p>
+            </div>
+        </article>
+
+        <!-- 4. Equipment Manager -->
+        <article class="tile equipment" id="tile-equipment">
+            <h2>Equipment Manager</h2>
+            <div class="tile-content" id="equipment-content">
+                <p>Loading...</p>
+            </div>
+        </article>
+
+        <!-- 5. Weather -->
+        <article class="tile weather" id="tile-weather">
+            <h2>Weather</h2>
+            <div class="tile-content" id="weather-content">
+                <p>Loading...</p>
+            </div>
+        </article>
+
+        <!-- 6. Octopi Status -->
+        <article class="tile octopi" id="tile-octopi">
+            <h2>3D Printer Status</h2>
+            <div class="tile-content" id="octopi-content">
+                <p>Loading...</p>
+            </div>
+        </article>
+
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

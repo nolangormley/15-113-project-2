@@ -43,10 +43,8 @@ body {
 
 /* Dashboard Container */
 .dashboard-container {
-    display: grid;
-    /* Header takes auto height, then 2 main rows */
-    grid-template-rows: auto 1fr 1fr;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
     height: 100%;
     width: 100%;
@@ -54,9 +52,18 @@ body {
     margin: 0 auto;
 }
 
+/* Tiles Wrapper (Desktop Grid) */
+.tiles-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    flex-grow: 1;
+    min-height: 0;
+}
+
 /* Header */
 header {
-    grid-column: 1 / -1;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -296,19 +303,37 @@ li:last-child {
     background: rgba(255, 255, 255, 0.4);
 }
 
-/* Media Query for smaller screens just in case */
+/* Media Query for smaller screens (Raspberry Pi Touchscreens e.g. 7-inch) */
 @media (max-width: 900px) {
-    .dashboard-container {
-        grid-template-columns: 1fr 1fr;
-    }
-}
 
-@media (max-width: 600px) {
-    .dashboard-container {
-        grid-template-columns: 1fr;
+    /* Convert to horizontal swipe layout showing exactly 2 tiles */
+    .tiles-wrapper {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        /* Increase padding bounds to prevent glow/hover clipping from overflow-y: hidden */
+        padding-top: 25px;
+        margin-top: -25px;
+        padding-bottom: 25px;
+        margin-bottom: -20px;
+        /* Bring carousel layer above the header */
+        position: relative;
+        z-index: 10;
+        gap: 15px;
+    }
+
+    .tile {
+        /* Force each tile to take roughly 50% width to show exactly 2 tiles */
+        flex: 0 0 calc(50% - 7.5px);
+        scroll-snap-align: start;
+        min-width: 250px;
+        /* Ensure it can shrink smaller than 300px if needed */
     }
 
     body {
-        overflow: auto;
+        overflow: hidden;
+        /* Prevent vertical scrolling of whole page */
     }
 }

@@ -1,88 +1,101 @@
-/* AI Insight Popout System */
-.ai-insight-container {
-    position: relative;
-    display: inline-block;
-}
-
-.ai-icon-trigger {
-    color: var(--neon-cyan);
-    font-size: 1.5rem;
-    cursor: help;
-    text-shadow: 0 0 10px var(--neon-cyan);
-    animation: neon-pulse 2s infinite;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    background: rgba(0, 0, 0, 0.3);
-}
-
-.ai-popup {
-    visibility: hidden;
-    width: 320px;
-    background-color: rgba(5, 5, 20, 0.98);
-    color: var(--text-color);
-    text-align: left;
-    border-radius: 8px;
-    padding: 15px;
+/* AI Overlay System for Touch/Mobile */
+.ai-overlay {
+    display: none;
     position: fixed;
-    /* Fixed relative to viewport */
-    z-index: 9999;
-    /* Supercede everything */
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(5, 5, 20, 0.8);
+    backdrop-filter: blur(10px);
+}
 
-    /* Center on screen or near mouse? Centered for maximum visibility */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    opacity: 0;
-    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+.ai-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    /* Cyberpunk styling */
+.ai-overlay-content {
+    background-color: rgba(10, 10, 25, 0.95);
     border: 1px solid var(--neon-cyan);
     box-shadow: 0 0 50px rgba(0, 243, 255, 0.3);
-    /* Stronger glow */
-    font-size: 1rem;
-    line-height: 1.5;
-    backdrop-filter: blur(15px);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    padding: 25px;
+    position: relative;
+    color: var(--text-color);
+    animation: zoomIn 0.3s ease-out;
 }
 
-/* Remove arrow since it's now a modal-like popup */
-.ai-popup::after {
-    display: none;
+.ai-overlay-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: var(--neon-cyan);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s, text-shadow 0.2s;
 }
 
-/* Hover State */
-.ai-insight-container:hover .ai-popup {
-    visibility: visible;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+.ai-overlay-close:hover {
+    color: var(--neon-magenta);
+    text-shadow: 0 0 10px var(--neon-magenta);
 }
 
-@keyframes neon-pulse {
+.ai-overlay-header {
+    font-family: var(--font-display);
+    color: var(--neon-cyan);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px solid rgba(0, 243, 255, 0.2);
+    padding-bottom: 10px;
+}
 
-    0%,
-    100% {
-        box-shadow: 0 0 5px rgba(0, 243, 255, 0.2);
-    }
+.ai-overlay-body {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
 
-    50% {
-        box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
-    }
+.workout-link-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.workout-link-btn:hover {
+    background: rgba(0, 243, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
 }
 
 .ai-reasoning-title {
     font-family: var(--font-display);
     color: var(--neon-cyan);
-    font-size: 0.8rem;
-    margin-bottom: 8px;
+    font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }

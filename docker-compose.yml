@@ -1,34 +1,58 @@
 version: '3.8'
 
 services:
-  # Chore Chart Website (Flask App)
-  chore_chart:
+  # # Chore Chart Website (Flask App)
+  # chore_chart:
+  #   build:
+  #     context: ./chore_chart
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     - ./chore_chart:/app
+  #   environment:
+  #     - FLASK_ENV=development
+  #   networks:
+  #     - app_network
+
+  # # Strava Recommended Workout API (FastAPI)
+  # strava_api:
+  #   build:
+  #     context: ./strava-recommended-workout
+  #     dockerfile: src/api/Dockerfile
+  #   ports:
+  #     - "5001:8000"
+  #   volumes:
+  #     - ./strava-recommended-workout:/app
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     # Map DB path if needed, or rely on .env
+  #     - DB_PATH=/app/data/strava_warehouse.duckdb
+  #   networks:
+  #     - app_network
+
+  # Calendar Google Sync API (FastAPI)
+  calendar_api:
     build:
-      context: ./chore_chart
+      context: ./calendar_api
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5005:5005"
     volumes:
-      - ./chore_chart:/app
-    environment:
-      - FLASK_ENV=development
+      - ./calendar_api:/app
+    env_file:
+      - .env
     networks:
       - app_network
 
-  # Strava Recommended Workout API (FastAPI)
-  strava_api:
-    build:
-      context: ./strava-recommended-workout
-      dockerfile: src/api/Dockerfile
+  # Dashboard UI (Static Files)
+  dashboard:
+    image: nginx:alpine
     ports:
-      - "5001:8000"
+      - "80:80"
     volumes:
-      - ./strava-recommended-workout:/app
-    env_file:
-      - .env
-    environment:
-      # Map DB path if needed, or rely on .env
-      - DB_PATH=/app/data/strava_warehouse.duckdb
+      - ./:/usr/share/nginx/html
     networks:
       - app_network
 

@@ -34,7 +34,7 @@ function loadDashboardData() {
 async function loadWorkout() {
     const container = document.getElementById('workout-content');
 
-    const API_URL = window.CONFIG?.STRAVA_API_URL || 'http://localhost:5001';
+    const API_URL = window.CONFIG?.STRAVA_API_URL || 'http://localhost:8000';
     const USER_ID = window.CONFIG?.STRAVA_USER_ID;
 
     if (!USER_ID) {
@@ -62,6 +62,7 @@ async function loadWorkout() {
         const ctl = statusData.fitness_ctl || 0;
         const atl = statusData.fatigue_atl || 0;
         const tsb = statusData.form_tsb || 0;
+        const vo2Max = statusData.vo2_max ?? statusData.vo2max ?? statusData.VO2_max;
 
         // Dynamic Colors based on TSB state
         let statusColor = 'var(--neon-cyan)';
@@ -90,28 +91,18 @@ async function loadWorkout() {
 
         const html = `
             <!-- Top Section: Workout Recommendation -->
-            <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px;">
+            <div id="workout-click-area" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; transition: background 0.2s; border-radius: 8px; padding: 10px; margin: -10px -10px 15px -10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                     <div style="font-size: 1.1rem; font-weight: bold; color: ${statusColor}; text-transform: uppercase;">
                         ${category} Focus
                     </div>
-                    
-                    <!-- AI Tooltip Trigger -->
-                    ${statusData.ai_insight ? `
-                        <div class="ai-insight-container">
-                            <div class="ai-icon-trigger">?</div>
-                            <div class="ai-popup">
-                                <div class="ai-reasoning-title">
-                                    <span>AI Coach Insight</span>
-                                </div>
-                                ${statusData.ai_insight}
-                            </div>
-                        </div>
-                    ` : ''}
                 </div>
                 
                 <div style="font-size: 1.2rem; margin-bottom: 5px; color: var(--text-color);">
                     ${workout.name}
+                </div>
+                <div style="font-size: 0.8rem; color: var(--neon-cyan); opacity: 0.8; margin-top: 5px; text-align: right;">
+                    <span>TAP FOR DETAILS &raquo;</span>
                 </div>
             </div>
 
@@ -123,16 +114,37 @@ async function loadWorkout() {
                    ${createBar('Fatigue (ATL)', atl, 160, 'var(--neon-magenta)', 0)}
                 </div>
                 
-                <!-- Right: Big TSB Number -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid ${statusColor};">
-                    <div style="font-size: 0.8rem; opacity: 0.7; text-transform: uppercase;">Form (TSB)</div>
-                    <div style="font-size: 2.2rem; font-weight: bold; color: ${statusColor}; text-shadow: 0 0 10px ${statusColor};">
-                        ${tsb > 0 ? '+' : ''}${tsb}
+                <!-- Right: Metrics -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid ${statusColor}; padding: 10px 0; gap: 5px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.7rem; opacity: 0.7; text-transform: uppercase;">Form</div>
+                        <div style="font-size: 1.8rem; line-height: 1; font-weight: bold; color: ${statusColor}; text-shadow: 0 0 10px ${statusColor};">
+                            ${tsb > 0 ? '+' : ''}${tsb}
+                        </div>
                     </div>
+                    ${vo2Max !== undefined && vo2Max !== null ? `
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.7rem; opacity: 0.7; text-transform: uppercase;">VO2 Max</div>
+                        <div style="font-size: 1.2rem; line-height: 1; font-weight: bold; color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green);">
+                            ${typeof vo2Max === 'number' ? vo2Max.toFixed(1) : vo2Max}
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
         `;
         updateTile(container, html);
+
+        // Add event listener for overlay
+        setTimeout(() => {
+            const clickArea = document.getElementById('workout-click-area');
+            if (clickArea) {
+                clickArea.addEventListener('click', () => {
+                    const insight = recommendData.ai_reasoning || statusData.ai_insight;
+                    openWorkoutOverlay(workout, insight);
+                });
+            }
+        }, 150);
 
     } catch (error) {
         console.error("Error fetching workout/status:", error);
@@ -145,27 +157,76 @@ async function loadWorkout() {
 }
 
 // 2. Calendar
-function loadCalendar() {
+async function loadCalendar() {
     const container = document.getElementById('calendar-content');
-    // Dummy Data
-    const events = [
-        { title: "Team Sync", time: "10:00 AM" },
-        { title: "Lunch with Sarah", time: "12:30 PM" },
-        { title: "Project Review", time: "03:00 PM" },
-        { title: "Gym", time: "06:00 PM" }
-    ];
+    const API_URL = window.CONFIG?.CALENDAR_API_URL || 'http://localhost:5002';
 
-    let html = '<ul>';
-    events.forEach(event => {
-        html += `
-            <li>
-                <span>${event.title}</span>
-                <span style="color: var(--neon-magenta);">${event.time}</span>
-            </li>
-        `;
-    });
-    html += '</ul>';
-    updateTile(container, html);
+    try {
+        const response = await fetch(`${API_URL}/api/schedule`);
+        if (!response.ok) throw new Error('Calendar API Failed');
+        const data = await response.json();
+        const events = data.events;
+
+        if (data.message === 'NOT_AUTHENTICATED') {
+            updateTile(container, `
+                <div style="text-align: center; margin-top: 20px;">
+                    <div class="dim" style="margin-bottom: 15px;">Google Calendar not linked.</div>
+                    <a href="${API_URL}/api/schedule/auth-url" class="workout-link-btn" style="text-decoration: none;">Link Google Account</a>
+                </div>
+            `);
+
+            // Add click listener to fetch the auth URL and redirect
+            setTimeout(() => {
+                const authBtn = container.querySelector('a');
+                if (authBtn) {
+                    authBtn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        const url = authBtn.getAttribute('href');
+                        try {
+                            const res = await fetch(url);
+                            const urlData = await res.json();
+                            if (urlData.url) {
+                                window.location.href = urlData.url;
+                            }
+                        } catch (err) {
+                            console.error("Failed to get auth URL", err);
+                        }
+                    });
+                }
+            }, 100);
+            return;
+        }
+
+        if (data.message) {
+            updateTile(container, `<div class="dim" style="text-align:center; margin-top: 20px;">${data.message}</div>`);
+            return;
+        }
+
+        if (!events || events.length === 0) {
+            updateTile(container, `<div class="dim" style="text-align:center; margin-top: 20px;">No events today.</div>`);
+            return;
+        }
+
+        let html = '<ul>';
+        events.forEach(event => {
+            const timeColor = event.color || 'var(--neon-magenta)';
+            html += `
+                <li>
+                    <span>${event.title}</span>
+                    <span style="color: ${timeColor};">${event.time}</span>
+                </li>
+            `;
+        });
+        html += '</ul>';
+        updateTile(container, html);
+    } catch (error) {
+        console.error("Error fetching calendar:", error);
+        container.innerHTML = `
+            <div style="color: var(--neon-red); text-align: center;">
+                <div>Sync Error</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Check API at ${API_URL}</div>
+            </div>`;
+    }
 }
 
 // 3. Chores
@@ -419,3 +480,48 @@ function updateTile(element, html) {
         element.style.opacity = 1;
     }, 100);
 }
+
+// Overlay Functions
+function openWorkoutOverlay(workout, insightText) {
+    const overlay = document.getElementById('ai-overlay');
+    const body = document.getElementById('ai-overlay-body');
+
+    const contentHtml = `
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: var(--neon-green); margin-top: 0; font-family: var(--font-display); font-size: 1.3rem;">${workout.name}</h3>
+            <p style="opacity: 0.9;">${workout.description || 'No description available for this workout.'}</p>
+        </div>
+        <div style="margin-bottom: 25px; padding: 15px; background: rgba(0, 243, 255, 0.05); border-left: 3px solid var(--neon-cyan); border-radius: 0 8px 8px 0;">
+            <div class="ai-reasoning-title" style="margin-bottom: 10px; color: var(--neon-cyan); font-weight: bold;">AI Coach Insight</div>
+            <p style="margin: 0; line-height: 1.5; color: var(--text-color);">${insightText || 'No AI insight available.'}</p>
+        </div>
+        ${workout.url ? `<a href="${workout.url}" target="_blank" class="workout-link-btn">View Workout Details</a>` : ''}
+    `;
+
+    if (body) body.innerHTML = contentHtml;
+    if (overlay) overlay.classList.add('active');
+}
+
+function closeWorkoutOverlay() {
+    const overlay = document.getElementById('ai-overlay');
+    if (overlay) overlay.classList.remove('active');
+}
+
+// Add global event listeners for overlay
+document.addEventListener('DOMContentLoaded', () => {
+    // Handle close button
+    const closeBtn = document.querySelector('.ai-overlay-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeWorkoutOverlay);
+    }
+
+    // Close on background click
+    const overlay = document.getElementById('ai-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeWorkoutOverlay();
+            }
+        });
+    }
+});

@@ -61,7 +61,7 @@ def auth_callback(request: Request, code: str):
     dashboard_url = f"http://localhost/"
     return RedirectResponse(url=dashboard_url) # Redirect back to Dashboard root
 
-@app.get("/api/schedule")
+@app.get("/api/schedule/daily")
 def get_schedule():
     token_path = os.path.join(TOKEN_DIR, "default_token.json")
     if not os.path.exists(token_path):

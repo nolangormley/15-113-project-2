@@ -123,7 +123,7 @@ export default function DashboardGrid() {
 
     return (
         <div className="flex flex-col h-full w-full max-w-[1400px] mx-auto relative z-10">
-            <header className="relative flex justify-center items-center py-6 mb-2 z-20 shrink-0">
+            <header className="relative flex justify-center items-center py-[5px] mb-2 z-20 shrink-0">
                 <div className="flex items-center">
                     <img src="/title.png" alt="Mnemosyne" className="h-[60px] lg:h-[80px] drop-shadow-[0_0_8px_var(--neon-cyan)] object-contain" />
                 </div>
@@ -131,8 +131,8 @@ export default function DashboardGrid() {
                     <button
                         onClick={() => setIsEditing(!isEditing)}
                         className={`p-3 rounded-full transition-colors backdrop-blur-sm ${isEditing
-                                ? 'text-neon-red hover:bg-neon-red/20 bg-black/40'
-                                : 'text-neon-cyan hover:bg-neon-cyan/20 bg-black/40'
+                            ? 'text-neon-red hover:bg-neon-red/20 bg-black/40'
+                            : 'text-neon-cyan hover:bg-neon-cyan/20 bg-black/40'
                             }`}
                         title={isEditing ? "Close Edit Mode" : "Edit Dashboard"}
                     >

@@ -12,6 +12,8 @@ COPY --from=builder /app/next.config.mjs ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+ENV PORT=8082
+ENV HOSTNAME="0.0.0.0"
 
-EXPOSE 3000
+EXPOSE 8082
 CMD ["node", "server.js"]

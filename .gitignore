@@ -1,0 +1,4 @@
+.env
+calendar_api/credentials/
+__pycache__/
+*.pyc

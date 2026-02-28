@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
     --bg-color: #050510;
     --tile-bg: rgba(20, 20, 40, 0.6);
@@ -34,8 +38,8 @@ body {
 
     /* Cyberpunk Background Image */
     background-image:
-        linear-gradient(rgba(5, 5, 16, 0.9), rgba(5, 5, 16, 0.8)),
-        url('https://images.unsplash.com/photo-1605218427306-022ba951dd0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+        linear-gradient(rgba(5, 5, 16, 0.3), rgba(5, 5, 16, 0.4)),
+        url('/bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -82,7 +86,6 @@ h1 {
     letter-spacing: 3px;
     margin: 0;
     font-size: 1.8rem;
-    text-shadow: 0 0 8px var(--neon-cyan);
 }
 
 .clock {
@@ -220,7 +223,7 @@ li:last-child {
 
 .dim {
     color: var(--text-dim);
-    font-size: 0.9em;
+    font-size: 1.15em;
 }
 
 /* Helpers */

@@ -5,7 +5,7 @@ import { Responsive, Layout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { WidgetConfig, getAllWidgets, getWidget, WidgetModule } from "@/lib/registry";
-import { Plus, X, Move } from "lucide-react";
+import { Plus, X, Move, Pencil } from "lucide-react";
 
 export default function DashboardGrid() {
     const [layout, setLayout] = useState<WidgetConfig[]>([]);
@@ -123,17 +123,20 @@ export default function DashboardGrid() {
 
     return (
         <div className="flex flex-col h-full w-full max-w-[1400px] mx-auto relative z-10">
-            <header className="flex justify-between items-center px-5 py-3 bg-[rgba(0,0,0,0.5)] border-b-2 border-b-neon-cyan backdrop-blur shadow-[0_0_15px_rgba(0,243,255,0.2)] rounded-lg mb-4 z-20 shrink-0">
+            <header className="relative flex justify-center items-center py-6 mb-2 z-20 shrink-0">
                 <div className="flex items-center">
-                    <img src="/title.png" alt="Mnemosyne" className="items-center h-[30px] lg:h-[40px] drop-shadow-[0_0_8px_var(--neon-cyan)] object-contain" />
+                    <img src="/title.png" alt="Mnemosyne" className="h-[60px] lg:h-[80px] drop-shadow-[0_0_8px_var(--neon-cyan)] object-contain" />
                 </div>
-                <div className="flex gap-4 items-center clock font-display text-xl text-white">
+                <div className="absolute right-5 flex items-center">
                     <button
                         onClick={() => setIsEditing(!isEditing)}
-                        className={`px-4 py-2 border rounded transition-colors text-sm uppercase tracking-wider ${isEditing ? 'border-neon-red text-neon-red hover:bg-neon-red/20' : 'border-neon-cyan text-neon-cyan hover:bg-neon-cyan/20'}`}
-                        style={{ cursor: "pointer" }}
+                        className={`p-3 rounded-full transition-colors backdrop-blur-sm ${isEditing
+                                ? 'text-neon-red hover:bg-neon-red/20 bg-black/40'
+                                : 'text-neon-cyan hover:bg-neon-cyan/20 bg-black/40'
+                            }`}
+                        title={isEditing ? "Close Edit Mode" : "Edit Dashboard"}
                     >
-                        {isEditing ? "Close Edit Mode" : "Edit"}
+                        {isEditing ? <X size={24} /> : <Pencil size={24} />}
                     </button>
                 </div>
             </header>

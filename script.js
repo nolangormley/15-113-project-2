@@ -62,7 +62,7 @@ async function loadWorkout() {
         const ctl = statusData.fitness_ctl || 0;
         const atl = statusData.fatigue_atl || 0;
         const tsb = statusData.form_tsb || 0;
-        const vo2Max = statusData.vo2_max ?? statusData.vo2max ?? statusData.VO2_max;
+        const vo2Max = recommendData.latest_vo2_max;
 
         // Dynamic Colors based on TSB state
         let statusColor = 'var(--neon-cyan)';
@@ -71,6 +71,16 @@ async function loadWorkout() {
         else if (tsb < -10) statusColor = 'var(--neon-orange)'; // Productive
         else statusColor = 'var(--neon-magenta)'; // Maintenance/Optimal
 
+        // Dynamic Colors based on VO2 Max
+        let vo2Color = 'var(--neon-magenta)';
+        if (vo2Max !== undefined && vo2Max !== null) {
+            if (vo2Max < 40) vo2Color = 'var(--neon-red)';
+            else if (vo2Max < 45) vo2Color = 'var(--neon-orange)';
+            else if (vo2Max < 50) vo2Color = 'var(--neon-yellow)';
+            else if (vo2Max < 55) vo2Color = 'var(--neon-green)';
+            else vo2Color = 'var(--neon-cyan)';
+        }
+
         // Helper for metric bars
         const createBar = (label, value, max, color, min = 0) => {
             let percentage = ((value - min) / (max - min)) * 100;
@@ -78,7 +88,7 @@ async function loadWorkout() {
 
             return `
             <div style="margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 2px;">
+                <div style="display: flex; justify-content: space-between; font-size: 1.05rem; margin-bottom: 2px;">
                     <span style="opacity: 0.8;">${label}</span>
                     <span style="font-weight: bold; color: ${color};">${value}</span>
                 </div>
@@ -101,7 +111,7 @@ async function loadWorkout() {
                 <div style="font-size: 1.2rem; margin-bottom: 5px; color: var(--text-color);">
                     ${workout.name}
                 </div>
-                <div style="font-size: 0.8rem; color: var(--neon-cyan); opacity: 0.8; margin-top: 5px; text-align: right;">
+                <div style="font-size: 1.05rem; color: var(--neon-cyan); opacity: 0.8; margin-top: 5px; text-align: right;">
                     <span>TAP FOR DETAILS &raquo;</span>
                 </div>
             </div>
@@ -115,17 +125,17 @@ async function loadWorkout() {
                 </div>
                 
                 <!-- Right: Metrics -->
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid ${statusColor}; padding: 10px 0; gap: 5px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 0.7rem; opacity: 0.7; text-transform: uppercase;">Form</div>
+                <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid ${statusColor}; padding: 10px 0; flex: 1;">
+                        <div style="font-size: 0.95rem; opacity: 0.7; text-transform: uppercase;">Form</div>
                         <div style="font-size: 1.8rem; line-height: 1; font-weight: bold; color: ${statusColor}; text-shadow: 0 0 10px ${statusColor};">
                             ${tsb > 0 ? '+' : ''}${tsb}
                         </div>
                     </div>
                     ${vo2Max !== undefined && vo2Max !== null ? `
-                    <div style="text-align: center;">
-                        <div style="font-size: 0.7rem; opacity: 0.7; text-transform: uppercase;">VO2 Max</div>
-                        <div style="font-size: 1.2rem; line-height: 1; font-weight: bold; color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green);">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid ${vo2Color}; padding: 10px 0; flex: 1;">
+                        <div style="font-size: 0.95rem; opacity: 0.7; text-transform: uppercase;">VO2 Max</div>
+                        <div style="font-size: 1.5rem; line-height: 1; font-weight: bold; color: ${vo2Color}; text-shadow: 0 0 10px ${vo2Color};">
                             ${typeof vo2Max === 'number' ? vo2Max.toFixed(1) : vo2Max}
                         </div>
                     </div>
@@ -151,7 +161,7 @@ async function loadWorkout() {
         container.innerHTML = `
             <div style="color: var(--neon-red);">
                 <div>Sync Error</div>
-                <div style="font-size: 0.8rem; opacity: 0.7;">Check API at ${API_URL}/status/${USER_ID}</div>
+                <div style="font-size: 1.05rem; opacity: 0.7;">Check API at ${API_URL}/status/${USER_ID}</div>
             </div>`;
     }
 }
@@ -224,7 +234,7 @@ async function loadCalendar() {
         container.innerHTML = `
             <div style="color: var(--neon-red); text-align: center;">
                 <div>Sync Error</div>
-                <div style="font-size: 0.8rem; opacity: 0.7;">Check API at ${API_URL}</div>
+                <div style="font-size: 1.05rem; opacity: 0.7;">Check API at ${API_URL}</div>
             </div>`;
     }
 }
@@ -256,7 +266,7 @@ async function loadChores() {
                     <li>
                         <div style="display:flex; flex-direction:column;">
                             <span>${chore.title}</span>
-                            <span style="font-size:0.8rem; color:var(--text-dim);">${chore.description || ''}</span>
+                            <span style="font-size: 1.05rem; color:var(--text-dim);">${chore.description || ''}</span>
                         </div>
                         <span style="border: 1px solid ${pointColor}; color: ${pointColor}; padding: 2px 8px; border-radius: 4px; font-weight:bold; min-width: 40px; text-align:center;">
                             ${chore.points}
@@ -272,7 +282,7 @@ async function loadChores() {
         container.innerHTML = `
             <div style="color: var(--neon-red); text-align: center;">
                 <div>Sync Error</div>
-                <div style="font-size: 0.8rem; opacity: 0.7;">Check API at ${API_URL}</div>
+                <div style="font-size: 1.05rem; opacity: 0.7;">Check API at ${API_URL}</div>
             </div>`;
     }
 }
@@ -299,7 +309,7 @@ function loadEquipment() {
                 <span>${task.item}</span>
                 <span style="color: ${color}; text-align: right;">
                     <div>${task.status}</div>
-                    <div style="font-size: 0.8rem; opacity: 0.7;">Due: ${task.due}</div>
+                    <div style="font-size: 1.05rem; opacity: 0.7;">Due: ${task.due}</div>
                 </span>
             </li>
         `;
@@ -365,7 +375,7 @@ function loadWeather() {
                         <span>L: ${weather.low}°</span>
                         <span>Hum: ${weather.humidity}%</span>
                     </div>
-                    <div style="font-size: 0.8rem; margin-top: 10px; opacity: 0.5;">
+                    <div style="font-size: 1.05rem; margin-top: 10px; opacity: 0.5;">
                         Lat: ${lat.toFixed(2)}, Long: ${long.toFixed(2)}
                     </div>
                 </div>
@@ -441,7 +451,7 @@ function loadOctopi() {
         <div class="progress-bar">
             <div class="progress-fill" style="width: ${status.progress}%;"></div>
         </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.9rem; color: var(--text-dim);">
+        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 1.15rem; color: var(--text-dim);">
             <span class="progress-text">${status.progress}%</span>
             <span>${status.timeLeft} left</span>
         </div>

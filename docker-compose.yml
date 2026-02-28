@@ -46,13 +46,13 @@ services:
     networks:
       - app_network
 
-  # Dashboard UI (Static Files)
+  # Dashboard UI (Next.js App)
   dashboard:
-    image: nginx:alpine
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "80:80"
-    volumes:
-      - ./:/usr/share/nginx/html
+      - "80:3000"
     networks:
       - app_network
 
